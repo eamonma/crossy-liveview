@@ -15,11 +15,11 @@ import "./index.css"
 import reportWebVitals from "./reportWebVitals"
 
 const httpLink = new HttpLink({
-  uri: "http://localhost:4000/api",
+  uri: "https://api.crossy.me/api",
 })
 
 const wsLink = new WebSocketLink({
-  uri: "ws://localhost:4000/subscriptions",
+  uri: "ws://api.crossy.me/subscriptions",
   options: {
     reconnect: true,
   },
