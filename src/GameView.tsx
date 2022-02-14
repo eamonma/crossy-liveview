@@ -1,15 +1,8 @@
 import { gql, useQuery, useSubscription } from "@apollo/client"
 import React, { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
-import { CrosswordData } from "./crosswordTypes"
-import { useWindowResize } from "beautiful-react-hooks"
 import CrosswordGrid from "./components/CrosswordGrid"
-import {
-  differenceInMinutes,
-  differenceInSeconds,
-  formatDistance,
-  formatDistanceStrict,
-} from "date-fns"
+import { CrosswordData } from "./crosswordTypes"
 
 const gameUpdateSubscription = gql`
   subscription subscribeToGameUpdate($topic: String!) {
@@ -31,16 +24,6 @@ const gameQuery = gql`
 
 const GameView = () => {
   const { gameId } = useParams()
-
-  const onWindowResize = useWindowResize()
-
-  const [width, setWidth] = useState(window.innerWidth)
-  const [height, setHeight] = useState(window.innerHeight)
-
-  useWindowResize((event) => {
-    setWidth(window.innerWidth)
-    setHeight(window.innerHeight)
-  })
 
   const { data, loading } = useSubscription(gameUpdateSubscription, {
     variables: { topic: gameId },
@@ -97,6 +80,7 @@ const GameView = () => {
     setTimeout(() => {
       setHighlights([])
     }, 4000)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, loading])
 
   useEffect(() => {
