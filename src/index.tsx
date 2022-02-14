@@ -19,7 +19,7 @@ const httpLink = new HttpLink({
 })
 
 const wsLink = new WebSocketLink({
-  uri: "ws://api.crossy.me/subscriptions",
+  uri: "wss://api.crossy.me/subscriptions",
   options: {
     reconnect: true,
   },
