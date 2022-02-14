@@ -14,8 +14,11 @@ export type Size = {
 }
 
 export interface CrosswordData {
+  title: string
+  publisher: string
   answers: Answers
   author: string
+  editor: string
   clues: Clues
   grid: Array<string>
   gridnums: Array<number>

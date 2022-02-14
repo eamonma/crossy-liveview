@@ -15,11 +15,11 @@ import "./index.css"
 import reportWebVitals from "./reportWebVitals"
 
 const httpLink = new HttpLink({
-  uri: "https://api.crossy.me/api",
+  uri: process.env.REACT_APP_HTTP_LINK_URI as string,
 })
 
 const wsLink = new WebSocketLink({
-  uri: "wss://api.crossy.me/subscriptions",
+  uri: process.env.REACT_APP_WS_LINK_URI as string,
   options: {
     reconnect: true,
   },

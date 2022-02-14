@@ -3,6 +3,13 @@ import React, { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { CrosswordData } from "./crosswordTypes"
 import { useWindowResize } from "beautiful-react-hooks"
+import CrosswordGrid from "./components/CrosswordGrid"
+import {
+  differenceInMinutes,
+  differenceInSeconds,
+  formatDistance,
+  formatDistanceStrict,
+} from "date-fns"
 
 const gameUpdateSubscription = gql`
   subscription subscribeToGameUpdate($topic: String!) {
@@ -47,6 +54,9 @@ const GameView = () => {
     date: "",
     grid: [],
     gridnums: [],
+    editor: "",
+    publisher: "",
+    title: "",
   })
   const [highlights, setHighlights] = useState<{ [gridNum: number]: string }>(
     {}
@@ -87,7 +97,7 @@ const GameView = () => {
     setTimeout(() => {
       setHighlights([])
     }, 4000)
-  }, [data, loading, answers])
+  }, [data, loading])
 
   useEffect(() => {
     if (queryLoading || !queryData) return
@@ -99,56 +109,55 @@ const GameView = () => {
 
   return (
     <div>
-      {puzzle && (
-        <div className="flex flex-wrap">
-          <div
-            id="crossword-grid"
-            className="p-1 sm:p-4 w-[1200px] max-w-[100vw]"
-            style={
-              {
-                //   width: `${width}px`,
-                //   height: `${height}px`,
-                //   maxWidth: `${width}px`,
-                //   maxHeight: `${height}px`,
-              }
-            }
-          >
-            <div
-              className="grid w-full border-2 border-black sm:border-4"
-              style={{
-                gridTemplateColumns: `repeat(${puzzle.size.cols}, 1fr)`,
-                // gridTemplateRows: `repeat(${puzzle.size.rows}, 40px)`,
-              }}
-            >
-              {[...new Array(puzzle.size.cols * puzzle.size.rows)].map(
-                (_, i) => {
-                  let backgroundColour = "#fff"
-                  if (puzzle.grid[i] === ".") backgroundColour = "rgb(24 24 27)"
-                  else if (Object.keys(highlights).includes(i.toString()))
-                    backgroundColour = highlights[i]
-                  return (
-                    <div
-                      key={i}
-                      className={`relative flex items-center w-full h-full font-normal transition duration-300 border-gray-400 border-[0.8px] text-zinc-800 aspect-square`}
-                      style={{
-                        backgroundColor: backgroundColour,
-                        fontSize: `calc(min(${width}px, ${height}px) / ${puzzle.size.cols} / 1.5)`,
-                      }}
-                    >
-                      <div className="absolute p-0 m-0 font-semibold tracking-tighter select-none text-[8px] sm:text-[11px] md:text-xs leading-[11px] lg:top-[1px] top-[-1px] left-[1.5px] cursor-none">
-                        {!!puzzle.gridnums[i] && puzzle.gridnums[i]}
-                      </div>
-                      <div className="relative flex items-center justify-center w-full h-full top-[3px]">
-                        {answers[i] && puzzle.grid[i] !== "." && answers[i]}
-                      </div>
-                    </div>
-                  )
-                }
-              )}
+      {puzzle && answers && (
+        <div className="flex flex-col flex-wrap w-screen p-2 max-w-[100vw] sm:p-4">
+          <header className="my-4 mt-2 font-serif">
+            <div className="flex items-baseline gap-4 text-2xl">
+              <h1 className="text-4xl font-semibold">{puzzle.publisher}</h1>
+              <div className="text-black text-opacity-60">
+                {new Date(puzzle.date).toLocaleDateString()}
+              </div>
             </div>
-          </div>
+            <h2 className="flex gap-4 text-lg">
+              <span>By {puzzle.author}</span>
+              <span className="text-black text-opacity-60">
+                Edited by {puzzle.editor}
+              </span>
+            </h2>
+            {/* <div className="mt-4">
+              Time elapsed:{" "}
+              {queryData &&
+                !queryLoading &&
+                (() => {
+                  const { gameById: game } = queryData
+                  const startDate = new Date(game.createdAt)
+                  const endDate = active
+                    ? currentDate
+                    : new Date(game.updatedAt)
+
+                  return (
+                    formatDistance(
+                      startDate,
+                      endDate
+                      //   { includeSeconds: true }
+                      //   { unit: "second" }
+                    ) +
+                    ` (${Math.abs(
+                      differenceInMinutes(startDate, endDate)
+                    )} minutes ${
+                      Math.abs(differenceInSeconds(startDate, endDate)) % 60
+                    } seconds)`
+                  )
+                })()}
+            </div> */}
+          </header>
+          <CrosswordGrid
+            puzzle={puzzle}
+            highlights={highlights}
+            answers={answers}
+          />
           <button
-            className="flex items-center justify-center w-24 h-10 gap-2 p-4 py-2 m-4 font-medium bg-zinc-200 rounded-xl"
+            className="flex items-center justify-center w-24 h-10 gap-2 p-4 py-2 my-4 font-medium bg-zinc-200 rounded-xl"
             onClick={async () => await refetch()}
           >
             {queryLoading ? (
@@ -173,5 +182,4 @@ const GameView = () => {
     </div>
   )
 }
-
 export default GameView
