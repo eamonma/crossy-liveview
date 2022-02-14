@@ -1,7 +1,8 @@
 import { gql, useQuery, useSubscription } from "@apollo/client"
-import React, { Fragment, useEffect, useMemo, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
-import { Answers, CrosswordData } from "./crosswordTypes"
+import { CrosswordData } from "./crosswordTypes"
+import { useWindowResize } from "beautiful-react-hooks"
 
 const gameUpdateSubscription = gql`
   subscription subscribeToGameUpdate($topic: String!) {
@@ -21,52 +22,18 @@ const gameQuery = gql`
   }
 `
 
-// https://coolaj86.com/articles/bigints-and-base64-in-javascript/
-function bnToB64(bn: string) {
-  var hex = BigInt(bn).toString(16)
-  if (hex.length % 2) {
-    hex = "0" + hex
-  }
-
-  var bin = []
-  var i = 0
-  var d
-  var b
-  while (i < hex.length) {
-    d = parseInt(hex.slice(i, i + 2), 16)
-    b = String.fromCharCode(d)
-    bin.push(b)
-    i += 2
-  }
-
-  return window.btoa(bin.join(""))
-  //   return Buffer.from(bin.join("")).toString("base64")
-}
-
-function b64ToBn(b64: string) {
-  let bin = window.atob(b64)
-  //   const bin = Buffer.from(b64).toString("base64")
-  let hex: Array<string> = []
-
-  bin.split("").forEach(function (ch) {
-    var h = ch.charCodeAt(0).toString(16)
-    if (h.length % 2) {
-      h = "0" + h
-    }
-    hex.push(h)
-  })
-
-  return BigInt("0x" + hex.join(""))
-}
-
 const GameView = () => {
   const { gameId } = useParams()
-  //   const gameId: string = useMemo(() => {
-  //     return b64ToBn(gameIdb64 as string).toString(16)
-  //     // 6208b6730917c7d6c9a77bee
-  //   }, [gameIdb64])
 
-  console.log(gameId)
+  const onWindowResize = useWindowResize()
+
+  const [width, setWidth] = useState(window.innerWidth)
+  const [height, setHeight] = useState(window.innerHeight)
+
+  useWindowResize((event) => {
+    setWidth(window.innerWidth)
+    setHeight(window.innerHeight)
+  })
 
   const { data, loading } = useSubscription(gameUpdateSubscription, {
     variables: { topic: gameId },
@@ -94,11 +61,7 @@ const GameView = () => {
     notifyOnNetworkStatusChange: true,
   })
 
-  console.log("Outside: " + data)
-
   useEffect(() => {
-    console.log(data)
-
     if (!data) return
 
     const prevAnswers = answers
@@ -110,21 +73,21 @@ const GameView = () => {
 
     setHighlights([])
 
-    newAnswers.map((newAnswer, i) => {
+    for (const [i, newAnswer] of newAnswers.entries()) {
       if (
         newAnswer &&
         ((!prevAnswers[i] && !!newAnswer) || newAnswer !== prevAnswers[i])
       ) {
         newHighlights[i] = "#ffd96e"
       }
-    })
+    }
 
     setHighlights(newHighlights)
 
     setTimeout(() => {
       setHighlights([])
     }, 4000)
-  }, [data, loading])
+  }, [data, loading, answers])
 
   useEffect(() => {
     if (queryLoading || !queryData) return
@@ -132,7 +95,7 @@ const GameView = () => {
     setAnswers(queryData.gameById.answers)
 
     setPuzzle(JSON.parse(queryData.gameById.puzzle) as CrosswordData)
-  }, [queryData])
+  }, [queryData, queryLoading])
 
   return (
     <div>
@@ -140,7 +103,15 @@ const GameView = () => {
         <div className="flex flex-wrap">
           <div
             id="crossword-grid"
-            className="p-1 sm:p-4 w-[100vh] h-[100vw] max-w-[100vw] max-h-[100vh]"
+            className="p-1 sm:p-4 w-[1200px] max-w-[100vw]"
+            style={
+              {
+                //   width: `${width}px`,
+                //   height: `${height}px`,
+                //   maxWidth: `${width}px`,
+                //   maxHeight: `${height}px`,
+              }
+            }
           >
             <div
               className="grid w-full border-2 border-black sm:border-4"
@@ -161,7 +132,7 @@ const GameView = () => {
                       className={`relative flex items-center w-full h-full font-normal transition duration-300 border-gray-400 border-[0.8px] text-zinc-800 aspect-square`}
                       style={{
                         backgroundColor: backgroundColour,
-                        fontSize: `calc(min(100vw, 100vh) / ${puzzle.size.cols} / 1.5)`,
+                        fontSize: `calc(min(${width}px, ${height}px) / ${puzzle.size.cols} / 1.5)`,
                       }}
                     >
                       <div className="absolute p-0 m-0 font-semibold tracking-tighter select-none text-[8px] sm:text-[11px] md:text-xs leading-[11px] lg:top-[1px] top-[-1px] left-[1.5px] cursor-none">
