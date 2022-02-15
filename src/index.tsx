@@ -10,6 +10,7 @@ import { getMainDefinition } from "@apollo/client/utilities"
 import React from "react"
 import ReactDOM from "react-dom"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
+import App from "./App"
 import GameView from "./GameView"
 import "./index.css"
 import reportWebVitals from "./reportWebVitals"
@@ -49,6 +50,7 @@ ReactDOM.render(
       {/* <App /> */}
       <Routes>
         {/* <Route path="game" element={<Layout />}> */}
+        <Route path="/" element={<App />} />
         <Route path="/game/:gameId" element={<GameView />} />
         {/* </Route> */}
       </Routes>
