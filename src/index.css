@@ -23,7 +23,7 @@ code {
   height: 20px;
 }
 .spinner .path {
-  stroke: #000;
+  /* stroke: #000; */
   stroke-linecap: round;
   -webkit-animation: dash 1.5s ease-in-out infinite;
   animation: dash 1.5s ease-in-out infinite;
