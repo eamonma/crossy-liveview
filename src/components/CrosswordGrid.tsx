@@ -28,7 +28,7 @@ const CrosswordGrid = ({
       }
     >
       <div
-        className="grid w-full border-2 border-black dark:border-zinc-50 sm:border-3"
+        className="grid w-full border-2 border-black shadow-xl dark:border-zinc-400 sm:border-3"
         style={{
           gridTemplateColumns: `repeat(${puzzle.size.cols}, 1fr)`,
           // gridTemplateRows: `repeat(${puzzle.size.rows}, 40px)`,
@@ -37,18 +37,16 @@ const CrosswordGrid = ({
         {[...new Array(puzzle.size.cols * puzzle.size.rows)].map((_, i) => {
           let backgroundColour = ""
           if (puzzle.grid[i] === ".")
-            backgroundColour = isDarkMode
-              ? "rgb(120, 120, 120)"
-              : "rgb(24 24 27)"
+            backgroundColour = isDarkMode ? "rgb(30, 35, 40)" : "rgb(4 4 7)"
           else if (Object.keys(highlights).includes(i.toString()))
             backgroundColour = highlights[i]
 
           return (
             <div
               key={i}
-              className={`relative flex items-center w-full h-full font-normal transition duration-300 border-gray-400 border-[0.8px] text-zinc-800 dark:text-zinc-100 aspect-square`}
+              className={`relative flex items-center w-full h-full font-normal transition duration-300 border-gray-400 border-[0.8px] text-zinc-800 dark:text-zinc-200 dark:text-opacity-90 aspect-square bg-stone-700`}
               style={{
-                backgroundColor: backgroundColour,
+                backgroundColor: backgroundColour && backgroundColour,
                 fontSize: `calc(min(100vw, 800px) / ${puzzle.size.cols} / 1.5)`,
               }}
             >
