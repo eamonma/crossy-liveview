@@ -1,10 +1,13 @@
 import { gql, useQuery, useSubscription } from "@apollo/client"
 import { useColorScheme } from "@mantine/hooks"
+// import { Skeleton } from "@mantine/core"
 import { differenceInMinutes, differenceInSeconds } from "date-fns"
 import React, { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import CrosswordGrid from "./components/CrosswordGrid"
 import { CrosswordData } from "./crosswordTypes"
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton"
+import "react-loading-skeleton/dist/skeleton.css"
 
 const gameUpdateSubscription = gql`
   subscription subscribeToGameUpdate($topic: String!) {
@@ -39,18 +42,7 @@ const GameView = () => {
     variables: { topic: gameId },
   })
   const [answers, setAnswers] = useState<Array<string>>([])
-  const [puzzle, setPuzzle] = useState<CrosswordData>({
-    size: { cols: 15, rows: 15 },
-    answers: { across: [], down: [] },
-    author: "Johnny Appleseed",
-    clues: { across: [], down: [] },
-    date: "2022-02-22",
-    grid: [],
-    gridnums: [],
-    editor: "Jane Peachcore",
-    publisher: "The Old Toronto Moments",
-    title: "The Old Toronto Moments",
-  })
+  const [puzzle, setPuzzle] = useState<CrosswordData>()
   const [highlights, setHighlights] = useState<{ [gridNum: number]: string }>(
     {}
   )
@@ -110,55 +102,76 @@ const GameView = () => {
   }, [])
 
   return (
-    <div className="min-h-screen dark:bg-stone-800 dark:text-slate-50">
-      {puzzle && answers && (
+    <SkeletonTheme baseColor="rgb(87 83 78)" highlightColor="rgb(168 162 158)">
+      <div className="min-h-screen dark:bg-stone-800 bg-stone-400 dark:text-slate-50">
+        {/* {puzzle && answers && ( */}
         <div className="flex flex-col flex-wrap w-screen p-2 max-w-[100vw] sm:p-4">
           <header className="my-4 mt-2 font-serif">
             <div className="flex items-baseline gap-4 text-2xl">
-              <h1 className="text-4xl font-semibold">{puzzle.publisher}</h1>
+              <h1 className="mb-2 text-4xl font-semibold grow">
+                {(puzzle && puzzle.publisher) || <Skeleton width={300} />}
+              </h1>
               <div className="text-black dark:text-slate-50 text-opacity-60">
-                {new Date(puzzle.date).toLocaleDateString()}
+                {puzzle && new Date(puzzle.date).toLocaleDateString()}
               </div>
             </div>
-            <h2 className="flex gap-4 text-lg">
-              <span>By {puzzle.author}</span>
-              <span className="text-black dark:text-slate-50 text-opacity-60">
-                Edited by {puzzle.editor}
-              </span>
+            <h2 className="flex gap-4 text-lg grow">
+              <div className="flex items-center justify-start gap-2">
+                By {(puzzle && puzzle.author) || <Skeleton width={140} />}
+              </div>
+              <div className="flex gap-2 text-black dark:text-slate-50 text-opacity-60">
+                Edited by{" "}
+                {(puzzle && puzzle.editor) || <Skeleton width={140} />}
+              </div>
             </h2>
             <div className="h-6 mt-4">
-              <span className="">
-                {queryData &&
-                  !queryLoading &&
-                  (() => {
-                    const { createdAt } = queryData.gameById
+              {queryData && !queryLoading ? (
+                (() => {
+                  const { createdAt } = queryData.gameById
 
-                    const { active, updatedAt } = data
-                      ? data.subscribeToGameUpdate
-                      : queryData.gameById
+                  const { active, updatedAt } = data
+                    ? data.subscribeToGameUpdate
+                    : queryData.gameById
 
-                    console.log(data, active)
+                  console.log(data, active)
 
-                    const startDate = new Date(createdAt)
-                    const endDate = active ? currentDate : new Date(updatedAt)
+                  const startDate = new Date(createdAt)
+                  const endDate = active ? currentDate : new Date(updatedAt)
 
-                    return (
-                      // formatDistance(startDate, endDate) +
-                      `${Math.abs(
-                        differenceInMinutes(startDate, endDate)
-                      )} minutes ${
-                        Math.abs(differenceInSeconds(startDate, endDate)) % 60
-                      } seconds`
-                    )
-                  })()}
-              </span>
+                  return (
+                    // formatDistance(startDate, endDate) +
+                    `${Math.abs(
+                      differenceInMinutes(startDate, endDate)
+                    )} minutes ${
+                      Math.abs(differenceInSeconds(startDate, endDate)) % 60
+                    } seconds`
+                  )
+                })()
+              ) : (
+                <Skeleton width={200} />
+              )}
             </div>
           </header>
-          <CrosswordGrid
-            puzzle={puzzle}
-            highlights={highlights}
-            answers={answers}
-          />
+          {
+            <CrosswordGrid
+              puzzle={
+                puzzle || {
+                  size: { cols: 15, rows: 15 },
+                  answers: { across: [], down: [] },
+                  author: "Johnny Appleseed",
+                  clues: { across: [], down: [] },
+                  date: "2022-02-22",
+                  grid: [],
+                  gridnums: [],
+                  editor: "Jane Peachcore",
+                  publisher: "The Old Toronto Moments",
+                  title: "The Old Toronto Moments",
+                }
+              }
+              highlights={highlights}
+              answers={answers}
+            />
+          }
           <button
             className="flex items-center justify-center gap-2 p-0 py-2 my-4 font-semibold w-fit h-fit dark:text-sky-300 rounded-xl text-sky-700"
             onClick={async () => {
@@ -197,8 +210,9 @@ const GameView = () => {
             {/* )} */}
           </button>
         </div>
-      )}
-    </div>
+        {/* )} */}
+      </div>
+    </SkeletonTheme>
   )
 }
 export default GameView
