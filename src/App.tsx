@@ -1,20 +1,26 @@
 import React from "react"
+import { FaPlus } from "react-icons/fa"
 
 function App() {
   return (
     <div className="min-h-screen App dark:bg-stone-800 dark:text-slate-50">
       <main className="text-lg">
-        <h1 className="p-4 font-serif text-3xl">Crossy</h1>
-        <div className="min-h-[calc(100vh-20rem)] py-4 dark:bg-stone-700 flex w-screen justify-center flex-col items-center">
-          <div className="flex flex-col items-start p-4">
+        <nav className="flex items-center h-20">
+          <h1 className="p-4 font-serif text-3xl">Crossy</h1>
+        </nav>
+        <div className="flex flex-col items-center justify-center w-screen py-4 min-h-[calc(100vh-5rem)] bg-opacity-30 dark:bg-opacity-30 dark:bg-stone-700 bg-stone-100">
+          <div className="relative flex flex-col items-start p-4 bottom-10">
             <h2 className="max-w-xl text-5xl">
               Solve crosswords collaboratively on Discord.
             </h2>
             <a
               href="/#"
-              className="p-3 px-5 my-4 ml-0 font-semibold transition shadow-sm dark:bg-sky-700 hasHover:hover:dark:bg-sky-600 rounded-xl"
+              className="flex items-center gap-2 p-3 px-5 my-4 mb-6 ml-0 font-semibold transition shadow-sm bg-[#5865F2] rounded-xl"
             >
-              Add to server
+              <span className="relative scale-105 top-[1px]">
+                <FaPlus />
+              </span>
+              Invite to server
             </a>
             <div className="flex flex-wrap gap-2 -ml-3 text-base text-sky-800 dark:text-sky-300">
               <a
