@@ -119,7 +119,7 @@ const GameView = () => {
     <SkeletonTheme baseColor="rgb(87 83 78)" highlightColor="rgb(168 162 158)">
       <div className="flex flex-wrap min-h-screen dark:bg-stone-800 bg-stone-400 dark:text-slate-50">
         {/* {puzzle && answers && ( */}
-        <div className="flex flex-col flex-wrap p-2 min-w-[50vw] max-w-[100vw] sm:p-4">
+        <div className="flex flex-col flex-wrap p-2 min-w-[40vw] max-w-[100vw] sm:p-4">
           <header className="max-w-xl my-4 mt-2 font-serif">
             <div className="flex items-baseline gap-4 text-2xl">
               <h1 className="mb-2 text-4xl font-semibold grow">
@@ -168,6 +168,7 @@ const GameView = () => {
           </header>
           {
             <CrosswordGrid
+              setCurrentHighlight={setCurrentHighlight}
               puzzle={
                 puzzle || {
                   size: { cols: 15, rows: 15 },
@@ -235,6 +236,13 @@ const GameView = () => {
                       parseInt(clue.substring(0, clue.indexOf(" ")))
                     )
                   }
+                  style={{
+                    color:
+                      currentHighlight ===
+                      parseInt(clue.substring(0, clue.indexOf(" ")))
+                        ? "#ebbe4b"
+                        : "",
+                  }}
                   className="py-1 transition cursor-pointer hover:brightness-75 my-[2px] opacity-90"
                   dangerouslySetInnerHTML={{
                     __html: `<span class="font-semibold">${clue.substring(
@@ -251,6 +259,13 @@ const GameView = () => {
             <ul>
               {puzzle?.clues.down.map((clue) => (
                 <li
+                  style={{
+                    color:
+                      currentHighlight ===
+                      parseInt(clue.substring(0, clue.indexOf(" ")))
+                        ? "#ebbe4b"
+                        : "",
+                  }}
                   onClick={() =>
                     setCurrentHighlight(
                       parseInt(clue.substring(0, clue.indexOf(" ")))
