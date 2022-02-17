@@ -101,12 +101,26 @@ const GameView = () => {
     setInterval(() => setCurrentDate(new Date()), 1000)
   }, [])
 
+  const [currentHighlight, setCurrentHighlight] = useState(0)
+
+  useEffect(() => {
+    const curr = currentHighlight
+    const index: number = puzzle?.gridnums.indexOf(curr) as number
+    setHighlights((prev) => {
+      const returnObject = { [index]: "#03adfc77", [curr]: "" }
+
+      // delete returnObject[currentHighlight]
+
+      return returnObject
+    })
+  }, [currentHighlight, puzzle])
+
   return (
     <SkeletonTheme baseColor="rgb(87 83 78)" highlightColor="rgb(168 162 158)">
-      <div className="min-h-screen dark:bg-stone-800 bg-stone-400 dark:text-slate-50">
+      <div className="flex flex-wrap min-h-screen dark:bg-stone-800 bg-stone-400 dark:text-slate-50">
         {/* {puzzle && answers && ( */}
-        <div className="flex flex-col flex-wrap w-screen p-2 max-w-[100vw] sm:p-4">
-          <header className="my-4 mt-2 font-serif">
+        <div className="flex flex-col flex-wrap p-2 min-w-[50vw] max-w-[100vw] sm:p-4">
+          <header className="max-w-xl my-4 mt-2 font-serif">
             <div className="flex items-baseline gap-4 text-2xl">
               <h1 className="mb-2 text-4xl font-semibold grow">
                 {(puzzle && puzzle.publisher) || <Skeleton width={300} />}
@@ -125,7 +139,7 @@ const GameView = () => {
               </div>
             </h2>
             <div className="h-6 mt-4">
-              {queryData && !queryLoading ? (
+              {!showLoadingSpinner && queryData && !queryLoading ? (
                 (() => {
                   const { createdAt } = queryData.gameById
 
@@ -209,6 +223,50 @@ const GameView = () => {
             </span>
             {/* )} */}
           </button>
+        </div>
+        <div className="flex gap-4 p-4 mt-4">
+          <div className="max-w-xs w-fit min-w-min">
+            <h3 className="text-3xl">Across clues</h3>
+            <ul>
+              {puzzle?.clues.across.map((clue) => (
+                <li
+                  onClick={() =>
+                    setCurrentHighlight(
+                      parseInt(clue.substring(0, clue.indexOf(" ")))
+                    )
+                  }
+                  className="py-1 transition cursor-pointer hover:brightness-75 my-[2px] opacity-90"
+                  dangerouslySetInnerHTML={{
+                    __html: `<span class="font-semibold">${clue.substring(
+                      0,
+                      clue.indexOf(" ")
+                    )}</span> ${clue.substring(clue.indexOf(" "))}`,
+                  }}
+                ></li>
+              ))}
+            </ul>
+          </div>
+          <div className="max-w-sm w-fit min-w-min">
+            <h3 className="text-3xl">Down clues</h3>
+            <ul>
+              {puzzle?.clues.down.map((clue) => (
+                <li
+                  onClick={() =>
+                    setCurrentHighlight(
+                      parseInt(clue.substring(0, clue.indexOf(" ")))
+                    )
+                  }
+                  className="py-1 transition cursor-pointer hover:brightness-75 my-[2px] opacity-90"
+                  dangerouslySetInnerHTML={{
+                    __html: `<span class="font-semibold">${clue.substring(
+                      0,
+                      clue.indexOf(" ")
+                    )}</span> ${clue.substring(clue.indexOf(" "))}`,
+                  }}
+                ></li>
+              ))}
+            </ul>
+          </div>
         </div>
         {/* )} */}
       </div>

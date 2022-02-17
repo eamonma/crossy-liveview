@@ -47,7 +47,7 @@ const CrosswordGrid = ({
               className={`relative flex items-center w-full h-full font-normal transition duration-300 border-gray-400 border-[0.8px] text-zinc-800 dark:text-zinc-200 dark:text-opacity-90 aspect-square bg-stone-700`}
               style={{
                 backgroundColor: backgroundColour && backgroundColour,
-                fontSize: `calc(min(100vw, 800px) / ${puzzle.size.cols} / 1.5)`,
+                fontSize: `calc(min(50vw, 800px) / ${puzzle.size.cols} / 1.5)`,
               }}
             >
               <div className="absolute p-0 m-0 font-semibold tracking-tighter select-none text-[8px] sm:text-[11px] md:text-xs leading-[11px] lg:top-[1px] top-[-1px] left-[1.5px] cursor-none">
